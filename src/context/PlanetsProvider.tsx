@@ -7,6 +7,7 @@ type PlanetsProviderProps = {
 
 function PlanetsProvider({ children }: PlanetsProviderProps) {
   const [planets, setPlanets] = useState<Planet[]>([]);
+  const [filteredPlanets, setFilteredPlanets] = useState<Planet[]>([]);
 
   const fetchPlanets = async () => {
     const data = await fetch('https://swapi.dev/api/planets');
@@ -44,6 +45,7 @@ function PlanetsProvider({ children }: PlanetsProviderProps) {
       };
     });
     setPlanets(resultsWOResidents);
+    setFilteredPlanets(resultsWOResidents);
   };
 
   useEffect(() => {
@@ -52,7 +54,8 @@ function PlanetsProvider({ children }: PlanetsProviderProps) {
 
   const context = {
     planets,
-    setPlanets,
+    filteredPlanets,
+    setFilteredPlanets,
   };
 
   return (

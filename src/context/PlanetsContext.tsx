@@ -35,7 +35,8 @@ export type PlanetAPI = {
 
 type PlanetsContextType = {
   planets: Planet[];
-  setPlanets: (planets: Planet[]) => void;
+  filteredPlanets: Planet[];
+  setFilteredPlanets: (planets: Planet[]) => void;
 };
 
 const PlanetsContext = createContext({} as PlanetsContextType);
