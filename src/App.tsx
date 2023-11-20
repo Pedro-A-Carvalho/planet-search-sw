@@ -4,11 +4,24 @@ import Table from './components/Table';
 import PlanetsContext from './context/PlanetsContext';
 
 function App() {
+  const columns = [
+    'population',
+    'orbital_period',
+    'diameter',
+    'rotation_period',
+    'surface_water',
+  ];
   const [nameFilter, setNameFilter] = useState('');
   const [columnFilter, setColumnFilter] = useState('population');
   const [comparisonFilter, setComparisonFilter] = useState('maior que');
   const [valueFilter, setValueFilter] = useState('0');
-  const { planets, filteredPlanets, setFilteredPlanets } = useContext(PlanetsContext);
+  const {
+    planets,
+    filteredPlanets,
+    filteredColumns,
+    setFilteredColumns,
+    setFilteredPlanets,
+  } = useContext(PlanetsContext);
 
   useEffect(
     () => {
@@ -17,6 +30,7 @@ function App() {
         planet.name.toLowerCase().includes(nameFilter.toLowerCase())
       ));
       setFilteredPlanets(filterPlanets);
+      setColumnFilter('');
     },
     [nameFilter, planets, setFilteredPlanets],
   );
@@ -30,6 +44,8 @@ function App() {
       return planetValue === value;
     });
     setFilteredPlanets(filterPlanets);
+    setFilteredColumns([...filteredColumns, columnFilter]);
+    setColumnFilter(columns.filter((column) => column !== columnFilter)[0]);
   }
 
   return (
@@ -53,11 +69,10 @@ function App() {
             data-testid="column-filter"
             onChange={ (e) => setColumnFilter(e.target.value) }
           >
-            <option value="population">population</option>
-            <option value="orbital_period">orbital_period</option>
-            <option value="diameter">diameter</option>
-            <option value="rotation_period">rotation_period</option>
-            <option value="surface_water">surface_water</option>
+            { columns.map((column) => {
+              if (filteredColumns.includes(column)) return null;
+              return <option key={ column } value={ column }>{ column }</option>;
+            })}
           </select>
           <select
             data-testid="comparison-filter"

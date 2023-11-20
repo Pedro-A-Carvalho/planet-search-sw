@@ -36,6 +36,8 @@ export type PlanetAPI = {
 type PlanetsContextType = {
   planets: Planet[];
   filteredPlanets: Planet[];
+  filteredColumns: string[];
+  setFilteredColumns: (columns: string[]) => void;
   setFilteredPlanets: (planets: Planet[]) => void;
 };
 
