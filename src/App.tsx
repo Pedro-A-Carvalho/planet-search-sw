@@ -5,31 +5,31 @@ import PlanetsContext from './context/PlanetsContext';
 
 function App() {
   const [nameFilter, setNameFilter] = useState('');
-  const [columnFilter, setColumnFilter] = useState('');
-  const [comparisonFilter, setComparisonFilter] = useState('');
-  const [valueFilter, setValueFilter] = useState('');
-  const { planets, setFilteredPlanets } = useContext(PlanetsContext);
+  const [columnFilter, setColumnFilter] = useState('population');
+  const [comparisonFilter, setComparisonFilter] = useState('maior que');
+  const [valueFilter, setValueFilter] = useState('0');
+  const { planets, filteredPlanets, setFilteredPlanets } = useContext(PlanetsContext);
 
   useEffect(
     () => {
       if (nameFilter === '') return setFilteredPlanets(planets);
-      const filteredPlanets = planets.filter((planet) => (
+      const filterPlanets = planets.filter((planet) => (
         planet.name.toLowerCase().includes(nameFilter.toLowerCase())
       ));
-      setFilteredPlanets(filteredPlanets);
+      setFilteredPlanets(filterPlanets);
     },
     [nameFilter, planets, setFilteredPlanets],
   );
 
   function filterByNumber() {
-    const filteredPlanets = planets.filter((planet) => {
+    const filterPlanets = filteredPlanets.filter((planet) => {
       const planetValue = Number(planet[columnFilter]);
       const value = Number(valueFilter);
       if (comparisonFilter === 'maior que') return planetValue > value;
       if (comparisonFilter === 'menor que') return planetValue < value;
       return planetValue === value;
     });
-    setFilteredPlanets(filteredPlanets);
+    setFilteredPlanets(filterPlanets);
   }
 
   return (
@@ -53,11 +53,11 @@ function App() {
             data-testid="column-filter"
             onChange={ (e) => setColumnFilter(e.target.value) }
           >
-            <option value="population">Population</option>
-            <option value="orbital_period">Orbital Period</option>
-            <option value="diameter">Diameter</option>
-            <option value="rotation_period">Rotation Period</option>
-            <option value="surface_water">Surface Water</option>
+            <option value="population">population</option>
+            <option value="orbital_period">orbital_period</option>
+            <option value="diameter">diameter</option>
+            <option value="rotation_period">rotation_period</option>
+            <option value="surface_water">surface_water</option>
           </select>
           <select
             data-testid="comparison-filter"
