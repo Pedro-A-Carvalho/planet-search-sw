@@ -18,13 +18,15 @@ function App() {
   const {
     planets,
     filteredPlanets,
-    filteredColumns,
-    setFilteredColumns,
+    filterByNumericValues,
+    setFilterByNumericValues,
     setFilteredPlanets,
   } = useContext(PlanetsContext);
 
   useEffect(
     () => {
+      if (filterByNumericValues.length !== 0) setFilterByNumericValues([]);
+      // corrigir esse bug aqui
       if (nameFilter === '') return setFilteredPlanets(planets);
       const filterPlanets = planets.filter((planet) => (
         planet.name.toLowerCase().includes(nameFilter.toLowerCase())
@@ -32,20 +34,28 @@ function App() {
       setFilteredPlanets(filterPlanets);
       setColumnFilter('');
     },
-    [nameFilter, planets, setFilteredPlanets],
+    [nameFilter, planets, setFilteredPlanets, setFilterByNumericValues],
   );
 
   function filterByNumber() {
-    const filterPlanets = filteredPlanets.filter((planet) => {
-      const planetValue = Number(planet[columnFilter]);
-      const value = Number(valueFilter);
-      if (comparisonFilter === 'maior que') return planetValue > value;
-      if (comparisonFilter === 'menor que') return planetValue < value;
-      return planetValue === value;
-    });
-    setFilteredPlanets(filterPlanets);
-    setFilteredColumns([...filteredColumns, columnFilter]);
-    setColumnFilter(columns.filter((column) => column !== columnFilter)[0]);
+    // const filterPlanets = filteredPlanets.filter((planet) => {
+    //   const planetValue = Number(planet[columnFilter]);
+    //   const value = Number(valueFilter);
+    //   if (comparisonFilter === 'maior que') return planetValue > value;
+    //   if (comparisonFilter === 'menor que') return planetValue < value;
+    //   return planetValue === value;
+    // });
+    // setFilteredPlanets(filterPlanets);
+    const newFilter = {
+      column: columnFilter,
+      comparison: comparisonFilter,
+      value: valueFilter,
+    };
+    setFilterByNumericValues([...filterByNumericValues, newFilter]);
+    setColumnFilter(columns.filter((column) => {
+      const filteredCols = filterByNumericValues.map((filter) => filter.column);
+      return !filteredCols.includes(column) && column !== newFilter.column;
+    })[0]);
   }
 
   return (
@@ -70,9 +80,12 @@ function App() {
             onChange={ (e) => setColumnFilter(e.target.value) }
           >
             { columns.map((column) => {
-              if (filteredColumns.includes(column)) return null;
-              return <option key={ column } value={ column }>{ column }</option>;
-            })}
+              const filteredCols = filterByNumericValues.map((filter) => filter.column);
+              if (filteredCols.includes(column)) return null;
+              return (
+                <option key={ column } value={ column }>{ column }</option>
+              );
+            }) }
           </select>
           <select
             data-testid="comparison-filter"
@@ -94,6 +107,34 @@ function App() {
             onClick={ filterByNumber }
           >
             Filtrar
+          </button>
+        </div>
+        <div>
+          { filterByNumericValues.map((filter) => (
+            <div data-testid="filter" key={ filter.column }>
+              <p>
+                { filter.column }
+                {' '}
+                { filter.comparison }
+                {' '}
+                { filter.value }
+              </p>
+              <button
+                type="button"
+                onClick={ () => setFilterByNumericValues(
+                  filterByNumericValues.filter((f) => f.column !== filter.column),
+                ) }
+              >
+                Remover filtro
+              </button>
+            </div>
+          )) }
+          <button
+            type="button"
+            data-testid="button-remove-filters"
+            onClick={ () => setFilterByNumericValues([]) }
+          >
+            Remover todas filtragens
           </button>
         </div>
       </div>

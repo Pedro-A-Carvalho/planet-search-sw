@@ -33,11 +33,17 @@ export type PlanetAPI = {
   edited: string;
 };
 
+export type Filters = {
+  column: string;
+  comparison: string;
+  value: string;
+};
+
 type PlanetsContextType = {
   planets: Planet[];
   filteredPlanets: Planet[];
-  filteredColumns: string[];
-  setFilteredColumns: (columns: string[]) => void;
+  filterByNumericValues: Filters[];
+  setFilterByNumericValues: (filters: Filters[]) => void;
   setFilteredPlanets: (planets: Planet[]) => void;
 };
 

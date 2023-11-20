@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import PlanetsContext, { Planet, PlanetAPI } from './PlanetsContext';
+import PlanetsContext, { Filters, Planet, PlanetAPI } from './PlanetsContext';
 
 type PlanetsProviderProps = {
   children: React.ReactNode;
@@ -8,7 +8,8 @@ type PlanetsProviderProps = {
 function PlanetsProvider({ children }: PlanetsProviderProps) {
   const [planets, setPlanets] = useState<Planet[]>([]);
   const [filteredPlanets, setFilteredPlanets] = useState<Planet[]>([]);
-  const [filteredColumns, setFilteredColumns] = useState<string[]>([]);
+  const [filterByNumericValues, setFilterByNumericValues] = useState<Filters[]>([]);
+
   const fetchPlanets = async () => {
     const data = await fetch('https://swapi.dev/api/planets');
     const { results } = await data.json();
@@ -52,11 +53,31 @@ function PlanetsProvider({ children }: PlanetsProviderProps) {
     fetchPlanets();
   }, []);
 
+  useEffect(() => {
+    function filter() {
+      const newPlanets = planets.filter((planet) => {
+        let valid = true;
+        filterByNumericValues.forEach((rule) => {
+          const { column, comparison, value } = rule;
+          const planetValue = Number(planet[column]);
+          const filterValue = Number(value);
+          if (valid && (comparison === 'maior que')) valid = planetValue > filterValue;
+          if (valid && (comparison === 'menor que')) valid = planetValue < filterValue;
+          if (valid && (comparison === 'igual a')) valid = planetValue === filterValue;
+        });
+        return valid;
+      });
+      setFilteredPlanets(newPlanets);
+    }
+
+    filter();
+  }, [filterByNumericValues, planets]);
+
   const context = {
     planets,
     filteredPlanets,
-    filteredColumns,
-    setFilteredColumns,
+    filterByNumericValues,
+    setFilterByNumericValues,
     setFilteredPlanets,
   };
 
