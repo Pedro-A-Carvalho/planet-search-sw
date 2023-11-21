@@ -15,6 +15,8 @@ function App() {
   const [columnFilter, setColumnFilter] = useState('population');
   const [comparisonFilter, setComparisonFilter] = useState('maior que');
   const [valueFilter, setValueFilter] = useState('0');
+  const [whichColumn, setWhichColumn] = useState('population');
+  const [columnOrder, setColumnOrder] = useState('ASC');
   const {
     planets,
     filteredPlanets,
@@ -56,6 +58,25 @@ function App() {
       const filteredCols = filterByNumericValues.map((filter) => filter.column);
       return !filteredCols.includes(column) && column !== newFilter.column;
     })[0]);
+  }
+
+  function orderPlanets() {
+    console.log('orderPlanets');
+    console.log(whichColumn);
+    console.log(columnOrder);
+    console.log(filteredPlanets);
+    let filterPlanets = [...filteredPlanets];
+    filterPlanets = filterPlanets.sort((a, b) => {
+      const column = whichColumn;
+      const order = columnOrder === 'ASC' ? 1 : -1;
+      if (a[column] === 'unknown') return 1;
+      if (b[column] === 'unknown') return -1;
+      if (Number(a[column]) > Number(b[column])) return order;
+      if (Number(a[column]) < Number(b[column])) return -order;
+      return 0;
+    });
+    console.log(filterPlanets);
+    setFilteredPlanets(filterPlanets);
   }
 
   return (
@@ -135,6 +156,41 @@ function App() {
             onClick={ () => setFilterByNumericValues([]) }
           >
             Remover todas filtragens
+          </button>
+        </div>
+        <div>
+          <select
+            data-testid="column-sort"
+            onChange={ (e) => setWhichColumn(e.target.value) }
+          >
+            { columns.map((column) => (
+              <option key={ column } value={ column }>{ column }</option>
+            )) }
+          </select>
+          <input
+            type="radio"
+            data-testid="column-sort-input-asc"
+            name="column-sort"
+            id="column-sort-input-asc"
+            value="ASC"
+            onChange={ (e) => setColumnOrder(e.target.value) }
+          />
+          <label htmlFor="column-sort-input-asc">ASC</label>
+          <input
+            type="radio"
+            data-testid="column-sort-input-desc"
+            name="column-sort"
+            id="column-sort-input-desc"
+            value="DESC"
+            onChange={ (e) => setColumnOrder(e.target.value) }
+          />
+          <label htmlFor="column-sort-input-desc">DESC</label>
+          <button
+            type="button"
+            data-testid="column-sort-button"
+            onClick={ orderPlanets }
+          >
+            Ordenar
           </button>
         </div>
       </div>

@@ -59,7 +59,7 @@ function PlanetsProvider({ children }: PlanetsProviderProps) {
         let valid = true;
         filterByNumericValues.forEach((rule) => {
           const { column, comparison, value } = rule;
-          const planetValue = Number(planet[column]);
+          const planetValue = Number(planet[column as keyof Planet]);
           const filterValue = Number(value);
           if (valid && (comparison === 'maior que')) valid = planetValue > filterValue;
           if (valid && (comparison === 'menor que')) valid = planetValue < filterValue;
